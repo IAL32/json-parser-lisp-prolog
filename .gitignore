@@ -1,3 +1,3 @@
 *.swp
 *.swo
-*.fuse*
+.fuse_hidden*
