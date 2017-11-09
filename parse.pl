@@ -1,27 +1,28 @@
 %% debug only: sbatti ogni volta scrivere [p]. per ricaricare il file
-r :- [p].
+r :- make.
 %% debug only: sbatti scrivere debug ogni volta per fare il trace
 t :- trace.
 %% debug only: sbatti scrivere nodebug ogni volta per uscire dal debug(mi esce sia dal trace che dal debug)
 nd :- nodebug.
 %% debug only: invece di dover usare ` ogni volta
+%% %% Disabilitato! Non piu' necessario
 %:- set_prolog_flag(double_quotes, chars).
 
-% json_load/2
-json_load(FileName, JSON) :-
-    open(FileName, read, BufferIn),
-    read_string(BufferIn, _, String),
-    string_codes(String, StringList),
-    json_parse(StringList, JSON),
-    close(BufferIn).
+%% necessario per evitare che prolog mi metta i puntini
+%% su cose troppo lunghe
+:- set_prolog_flag(answer_write_options,
+                   [ quoted(true),
+                     portray(true),
+                     spacing(next_argument)
+                   ]).
 
-% json_write/2
-% TODO
-json_write(JSON, FileName) :-
-    json_parse(JSON, String),
-    open(FileName, write, BufferOut),
-    write(BufferOut, String),
-    close(BufferOut).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%      INIZIO DEL PROGRAMMA                         %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+:- [io].
+:- [get].
+
 
 json_parse(JSONString, Object) :-
     json_object(Object, JSONString, []), !.
@@ -36,7 +37,7 @@ json_array(jsonarray(Array)) -->
 
 % json_object/3
 json_object(jsonobject([])) -->
-    "{", ws, "}".
+    "{", ws, "}", ws.
 json_object(jsonobject(Object)) -->
     "{", ws, json_members(Object), ws, "}", ws.
 
@@ -46,38 +47,23 @@ json_array_members([Member | Members]) -->
     ",", ws,
     json_array_members(Members).
 json_array_members([Member]) -->
-    json_value(Member), !.
+    json_value(Member).
 
-%json_members
-json_members([Object]) -->
-    json_pair(Object).
+% json_members/3
 json_members([Member | Members]) -->
     json_pair(Member), ws,
-    ",", ws,
+    ",", ws, !,
     json_members(Members).
+json_members([Object]) -->
+    json_pair(Object).
 
 % json_pair/3
+% Pair ::= String ':' Value
 json_pair((Key, Value)) -->
-    json_key(Key), ws, ":", ws, json_value(Value).
+    json_string(Key), ws, ":", ws, json_value(Value).
 
-% json_key/3
-json_key(Key) -->
-    ("\"", json_key_string(Chars), { atom_chars(Key, Chars) }, "\"")
-    |
-    ("'", json_key_string(Chars), { atom_chars(Key, Chars) }, "'")
-    |
-    ("`", json_key_string(Chars), { atom_chars(Key, Chars) }, "`").
-
-% json_values/3
 json_value(Value) -->
-    (("\"", "\"")
-    |
-    ("`", "`")),
-    { atom_chars(Value, "") }.
-json_value(Value) -->
-    ("\"", !, json_value_string_q(Codes), { atom_chars(Value, Codes) }, "\"")
-    |
-    ("`", !, json_value_string_a(Codes), { atom_chars(Value, Codes) }, "`"), !.
+    json_string(Value), !.
 json_value(Value) -->
     json_object(Value), !.
 json_value(Value) -->
@@ -94,39 +80,48 @@ json_value(Value) -->
     json_value_number(Codes),
     { number_chars(Value, Codes) }, !.
 
-% restringo solamente ai caratteri alfanumerici
-json_key_string([H | T]) --> [H], { char_type(H, alnum) }, json_key_string(T).
-json_key_string([]) --> [].
+% json_string/3
+% definizione di una stringa
+% String ::= '"' AnyCharSansDQ* '"' | '’' AnyCharSansSQ* '’'
+% AnyCharSansDQ ::= <qualunque carattere (ASCII) diverso da '"'>
+% AnyCharSansSQ ::= <qualunque carattere (ASCII) diverso da '’'>
 
+json_string(Value) -->
+    (("\"", "\"")
+    |
+    ("`", "`")),
+    { atom_chars(Value, "") }.
+json_string(Value) -->
+    ("\"", !, json_value_string_q(Codes), { atom_chars(Value, Codes) }, "\"")
+    |
+    ("`", !, json_value_string_a(Codes), { atom_chars(Value, Codes) }, "`"), !.
+
+% json_value_number/3
 json_value_number([H | T]) --> [H], { char_type(H, digit) }, json_value_number(T).
 json_value_number([]) --> [].
 
-% json_value_string_q/2
+% json_value_string_q/3
 % una stringa json inclusa tra ", che non contiene "
-json_value_string_q([H | T]) --> [H], { H \== 0'", char_type(H, alnum) }, json_value_string_q(T).
+json_value_string_q([H | T]) --> [H], { H \= '"', !, json_valid_char(H) }, json_value_string_q(T).
 json_value_string_q([]) --> [].
 
-% json_value_string_a/2
+% json_value_string_a/3
 % una stringa json inclusa tra `, che non contiene `
-json_value_string_a([H | T]) --> [H], { H \== 0'`, char_type(H, alnum) | char_type(H, space) }, json_value_string_a(T).
+json_value_string_a([H | T]) --> [H], { H \= '`', !, json_valid_char(H) }, json_value_string_a(T).
 json_value_string_a([]) --> [].
 
+% json_valid_char/1
+% Controlla che il carattere sia valido per una json_string
+json_valid_char(H) :-
+    char_type(H, alnum), !.
+json_valid_char(H) :-
+    char_type(H, space), !.
+json_valid_char(H) :-
+    char_type(H, punct), !.
 
 % ws/2
 % consuma gli spazi bianchi
-ws --> [W], { char_type(W, space) }, ws, !.
-ws --> [].
+ws --> ws_, ws, ! | ws_, ! | [].
+ws_ --> [W], { char_type(W, space) }.
 
-%% getter e setter
-%% usare meta-predicati
-%% functor, args, univ( =.. )potranno tornarmi utili
-%%
 
-%json_get(JSON, Field, Result) :-
-%    atom_chars(Field, ToSearch).
-
-%json_get_members([Member | Members], Fields, Index) :-
-%    json_get_member(Member, Fields, Index),
-%    json_get_members(Members, Fields, Index).
-%json_get_members([Member], Fields, Index) :-
-%    json_get_member(Member, Fields, Index).
