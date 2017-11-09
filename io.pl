@@ -1,3 +1,4 @@
+% Qui andremo a definire le procedure di input-output
 % json_load/2
 json_load(FileName, JSON) :-
     open(FileName, read, BufferIn),

@@ -1,7 +1,0 @@
-:- [settings].
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%      INIZIO DEL PROGRAMMA                         %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-:- [io].                % Input/Output
-:- [json_decode].       % Json Decode
-:- [json_encode].       % Json Encode
