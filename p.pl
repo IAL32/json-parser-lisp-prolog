@@ -11,8 +11,8 @@ nd :- nodebug.
 json_load(FileName, JSON) :-
     open(FileName, read, BufferIn),
     read_string(BufferIn, _, String),
-    atom_chars(String, Chars),
-    json_parse(Chars, JSON),
+    string_codes(String, StringList),
+    json_parse(StringList, JSON),
     close(BufferIn).
 
 % json_write/2
@@ -103,14 +103,12 @@ json_value_number([]) --> [].
 
 % json_value_string_q/2
 % una stringa json inclusa tra ", che non contiene "
-% TODO: effettivamente far sì che fallisca quando contiene un "
-json_value_string_q([H | T]) --> [H], { char_type(H, alnum) }, json_value_string_q(T).
+json_value_string_q([H | T]) --> [H], { H \== 0'", char_type(H, alnum) }, json_value_string_q(T).
 json_value_string_q([]) --> [].
 
 % json_value_string_a/2
 % una stringa json inclusa tra `, che non contiene `
-% TODO: effettivamente far sì che fallisca quando contiene un `
-json_value_string_a([H | T]) --> [H], { char_type(H, alnum) | char_type(H, space) }, json_value_string_a(T).
+json_value_string_a([H | T]) --> [H], { H \== 0'`, char_type(H, alnum) | char_type(H, space) }, json_value_string_a(T).
 json_value_string_a([]) --> [].
 
 
@@ -119,6 +117,16 @@ json_value_string_a([]) --> [].
 ws --> [W], { char_type(W, space) }, ws, !.
 ws --> [].
 
-
-
 %% getter e setter
+%% usare meta-predicati
+%% functor, args, univ( =.. )potranno tornarmi utili
+%%
+
+%json_get(JSON, Field, Result) :-
+%    atom_chars(Field, ToSearch).
+
+%json_get_members([Member | Members], Fields, Index) :-
+%    json_get_member(Member, Fields, Index),
+%    json_get_members(Members, Fields, Index).
+%json_get_members([Member], Fields, Index) :-
+%    json_get_member(Member, Fields, Index).
