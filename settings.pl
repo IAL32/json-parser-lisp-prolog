@@ -8,6 +8,8 @@ nd :- nodebug.
 %% %% Disabilitato! Non piu' necessario
 :- set_prolog_flag(double_quotes, chars).
 
+% NOTARE BENE! PER QUESTIONI DI VISIBILITA' DEL RISULTATO, MANTENERE IL FLAG ATTIVO, COSI COME atom_chars in json_load, ALTRIMENTI SI VEDRANNO I CODES!
+
 %% necessario per evitare che prolog mi metta i puntini
 %% su cose troppo lunghe
 :- set_prolog_flag(answer_write_options,
