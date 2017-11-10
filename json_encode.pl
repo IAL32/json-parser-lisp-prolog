@@ -1,13 +1,16 @@
-% json_get/3
-json_get(jsonobject(Members), Key, Value) :-
-    %atom_chars(KeyAtom, Key),
-    member((Key, Value), (Members)), !.
+json_encode(jsonobject([]), "{}").
+json_encode(jsonarray([]), "[]").
 
-json_get(Object, [Key], Value) :-
-    json_get(Object, Key, Value), !.
+json_encode(jsonobject(Members), [StringMembers | String]) :-
+    json_encode_members(Members, StringMembers).
 
-json_get(Object, [Key, Nth], Value) :-
-    json_get(Object, Key, jsonarray(Array)),
-    nth0(Nth, Array, Value), !.
-%json_get_member([(Key, Value) | _Members], Key, Value).
+json_encode_members([Member | Members], StringMerged) :-
+    json_encode_pair(Member, StringPair),
+    json_encode_members(Members, StringMembers),
+    string_concat(StringPair, ",", StringPairComma),
+    string_concat(StringPairComma, StringMembers, StringMerged).
 
+json_encode_pair((Key, Value), StringPair) :-
+    atomic_list_concat(["\"", Key, "\""], StringKey),
+    json_encode_value(Value, StringValue)
+    string_concat(StringKey, ":", String).
