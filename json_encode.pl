@@ -12,5 +12,5 @@ json_encode_members([Member | Members], StringMerged) :-
 
 json_encode_pair((Key, Value), StringPair) :-
     atomic_list_concat(["\"", Key, "\""], StringKey),
-    json_encode_value(Value, StringValue)
+    json_encode_value(Value, StringValue),
     string_concat(StringKey, ":", String).
