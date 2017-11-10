@@ -43,7 +43,8 @@ json_encode_key(Key, StringKey) :-
 
 % json_encode_value/2
 json_encode_value(Object, StringValue) :-
-    json_encode(Object, StringValue), !.
+    json_encode(Object, StringValue),
+    !.
 json_encode_value(Number, StringNumber) :-
     number(Number),
     atom_number(AtomNumber, Number),
@@ -51,7 +52,8 @@ json_encode_value(Number, StringNumber) :-
     string_chars(StringNumber, NumberChars),
     !.
 json_encode_value(String, StringValue) :-
-    json_encode_string(String, StringValue), !.
+    json_encode_string(String, StringValue),
+    !.
 
 % json_encode_string/2
 json_encode_string(String, StringValue) :-
