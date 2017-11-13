@@ -10,7 +10,7 @@ json_load(FileName, JSON) :-
 % json_write/2
 % TODO
 json_write(JSON, FileName) :-
-    json_parse(JSON, String),
+    json_encode(JSON, String),
     open(FileName, write, BufferOut),
     write(BufferOut, String),
     close(BufferOut).
