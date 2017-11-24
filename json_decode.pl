@@ -66,18 +66,18 @@ json_string(Value) -->
     (
         ("\"", "\"") | ("`", "`")
     ),
-    { atom_chars(Value, "") }.
+    { string_codes(Value, "") }.
 json_string(Value) -->
     (
         "\"", !,
         json_value_string_dq(Codes),
-        { atom_chars(Value, Codes) },
+        { string_codes(Value, Codes) },
         "\""
     ) |
     (
         "`", !,
         json_value_string_sq(Codes),
-        { atom_chars(Value, Codes) },
+        { string_codes(Value, Codes) },
         "`"
     ), !.
 
