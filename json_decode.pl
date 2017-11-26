@@ -57,7 +57,7 @@ json_value(Value) -->
     % analizzo la mantissa
     json_value_number(Mantissa),
     % unisco le due liste e ne faccio una sola senza nested lists
-    { flatten([Number, "." | Mantissa], Float) },
+    { flatten([Number, 0'. | Mantissa], Float) },
     % converto la lista prima in stringa, e poi in un atomo prolog
     {
         string_to_list(Value1, Float),
@@ -75,7 +75,7 @@ json_value(Value) -->
 % AnyCharSansSQ ::= <qualunque carattere (ASCII) diverso da '’'>
 json_string(Value) -->
     (
-        ("\"", "\"") | ("`", "`")
+        ("\"", "\"") | ("'", "'")
     ),
     { string_codes(Value, "") }.
 json_string(Value) -->
@@ -86,10 +86,10 @@ json_string(Value) -->
         "\""
     ) |
     (
-        "`", !,
+        "'", !,
         json_value_string_sq(Codes),
         { string_codes(Value, Codes) },
-        "`"
+        "'"
     ), !.
 
 % json_value_number/3
