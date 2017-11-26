@@ -1,8 +1,19 @@
-json_parse(JSONString, Object) :-
-    json_object(Object, JSONString, []),
+% json_parse/2
+%% Con il primo gestisco il caso in cui il primo
+%% argomento sia tra apici singoli, eg:
+%% json_parse('{"a":"b"}', JSON).
+json_parse(JSONAtom, Object) :-
+    atomic(JSONAtom),
+    atom_codes(JSONAtom, JSONString),
+    json_parse(JSONString, Object),
     !.
-json_parse(JSONString, Array) :-
-    json_array(Array, JSONString, []).
+%% questi altri due gestiscono le liste di codici
+%% di caratteri.
+json_parse(JSONList, Object) :-
+    json_object(Object, JSONList, []),
+    !.
+json_parse(JSONList, Array) :-
+    json_array(Array, JSONList, []).
 
 % json_array/3
 json_array(json_array([])) --> "[", ws, "]", ws.
@@ -86,14 +97,14 @@ json_string(Value) -->
 json_value_number([H | T]) -->
     [H],
     { char_type(H, digit) },
-    json_value_number(T).
+    json_value_number(T), !.
 json_value_number([]) --> [].
 
 % json_value_string_q/3
 % una stringa json inclusa tra ", che non contiene "
 json_value_string_dq([H | T]) -->
     [H],
-    { H \= '"', !, json_valid_char(H) },
+    { H \= 0'", json_valid_char(H) },
     json_value_string_dq(T).
 json_value_string_dq([]) --> [].
 
@@ -101,7 +112,7 @@ json_value_string_dq([]) --> [].
 % una stringa json inclusa tra `, che non contiene `
 json_value_string_sq([H | T]) -->
     [H],
-    { H \= '`', !, json_valid_char(H) },
+    { H \= 0'', json_valid_char(H) },
     json_value_string_sq(T).
 json_value_string_sq([]) --> [].
 

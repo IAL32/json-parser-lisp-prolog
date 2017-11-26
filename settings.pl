@@ -6,7 +6,7 @@ t :- trace.
 nd :- nodebug.
 %% debug only: invece di dover usare ` ogni volta
 %% %% Disabilitato! Non piu' necessario
-:- set_prolog_flag(double_quotes, chars).
+%:- set_prolog_flag(double_quotes, chars).
 
 % NOTARE BENE! PER QUESTIONI DI VISIBILITA' DEL RISULTATO, MANTENERE IL FLAG ATTIVO, COSI COME atom_chars in json_load, ALTRIMENTI SI VEDRANNO I CODES!
 

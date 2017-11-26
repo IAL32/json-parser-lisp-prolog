@@ -3,7 +3,7 @@ json_load(FileName, JSON) :-
     open(FileName, read, BufferIn),
     read_string(BufferIn, _, String),
     normalize_space(atom(Normalized), String),
-    atom_chars(Normalized, StringList),
+    atom_codes(Normalized, StringList),
     json_parse(StringList, JSON),
     close(BufferIn).
 
