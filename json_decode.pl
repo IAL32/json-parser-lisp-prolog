@@ -47,6 +47,7 @@ json_pair((Key, Value)) -->
     ":", ws,
     json_value(Value).
 
+% json_value/3
 json_value(Value) --> json_string(Value), !.
 json_value(Value) --> json_object(Value), !.
 json_value(Value) --> json_array(Value), !.
@@ -77,7 +78,7 @@ json_string(Value) -->
     (
         ("\"", "\"") | ("'", "'")
     ),
-    { string_codes(Value, "") }.
+    { string_codes(Value, "") }, !.
 json_string(Value) -->
     (
         "\"", !,
@@ -100,27 +101,21 @@ json_value_number([H | T]) -->
     json_value_number(T), !.
 json_value_number([]) --> [].
 
-% json_value_string_q/3
+% json_value_string_dq/3
 % una stringa json inclusa tra ", che non contiene "
 json_value_string_dq([H | T]) -->
     [H],
-    { H \= 0'", json_valid_char(H) },
-    json_value_string_dq(T).
+    { H \= 0'" },
+    json_value_string_dq(T), !.
 json_value_string_dq([]) --> [].
 
-% json_value_string_a/3
+% json_value_string_sq/3
 % una stringa json inclusa tra `, che non contiene `
 json_value_string_sq([H | T]) -->
     [H],
-    { H \= 0'', json_valid_char(H) },
-    json_value_string_sq(T).
+    { H \= 0'' },
+    json_value_string_sq(T), !.
 json_value_string_sq([]) --> [].
-
-% json_valid_char/1
-% Controlla che il carattere sia valido per una json_string
-json_valid_char(H) :- char_type(H, alnum), !.
-json_valid_char(H) :- char_type(H, space), !.
-json_valid_char(H) :- char_type(H, punct), !.
 
 % ws/2
 % consuma gli spazi bianchi

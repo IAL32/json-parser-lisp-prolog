@@ -34,7 +34,7 @@ test(json_write, [
 
 :- end_tests(io).
 
-:- begin_tests(jsonparse).
+:- begin_tests(json_parse).
 
 test(json_parse) :-
     json_parse("{}", jsonobject([])).
@@ -56,4 +56,24 @@ test(json_parse) :-
 test(json_parse) :-
     json_parse('{"fo{32}bar": "43"}', jsonobject([("fo{32}bar", "43")])).
 
-:- end_tests(jsonparse).
+% ovviamente mi deve fallire quando la sintassi è sbagliata
+test(json_parse, [fail]) :-
+    json_parse('{', _).
+
+:- end_tests(json_parse).
+
+
+:- begin_tests(json_value).
+
+test(json_value) :-
+    json_value(123.456, `123.456`, []).
+test(json_value) :-
+    json_value(123456, `123456`, []).
+test(json_value) :-
+    json_value("abc{[(,,]èòóö", `"abc{[(,,]èòóö"`, []).
+test(json_value) :-
+    json_value(jsonobject([]), `{}`, []).
+test(json_value) :-
+    json_value(jsonarray([]), `[]`, []).
+
+:- end_tests(json_value).
