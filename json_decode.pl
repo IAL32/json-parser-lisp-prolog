@@ -16,7 +16,7 @@ json_parse(JSONList, Array) :-
     json_array(Array, JSONList, []).
 
 % json_array/3
-json_array(json_array([])) --> "[", ws, "]", ws.
+json_array(jsonarray([])) --> "[", ws, "]", ws, !.
 json_array(jsonarray(Array)) -->
     "[", ws, json_array_members(Array), ws, "]", ws.
 
@@ -53,7 +53,7 @@ json_value(Value) --> json_array(Value), !.
 json_value(Value) -->
     % analizzo la prima parte del numero,
     json_value_number(Number),
-    ".",
+    ".", !,
     % analizzo la mantissa
     json_value_number(Mantissa),
     % unisco le due liste e ne faccio una sola senza nested lists
@@ -66,7 +66,7 @@ json_value(Value) -->
 json_value(Value) -->
     % un integer
     json_value_number(Codes),
-    { number_chars(Value, Codes) }, !.
+    { length(Codes, L), L > 0, number_chars(Value, Codes) }, !.
 
 % json_string/3
 % definizione di una stringa

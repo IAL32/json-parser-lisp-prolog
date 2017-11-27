@@ -1,10 +1,10 @@
 % json_encode(+JsonObject, -String).
-json_encode(jsonobject([]), '{}').
-json_encode(jsonarray([]), '[]').
+json_encode(jsonobject([]), '{}') :- !.
+json_encode(jsonarray([]), '[]') :- !.
 
 json_encode(jsonobject(Members), StringObject) :-
     json_encode_object_members(Members, StringMembers),
-    atomic_list_concat(['{', StringMembers , '}'], StringObject).
+    atomic_list_concat(['{', StringMembers , '}'], StringObject), !.
 
 json_encode(jsonarray(Members), StringArray) :-
     json_encode_array_members(Members, StringMembers),
