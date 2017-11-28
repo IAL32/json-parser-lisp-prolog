@@ -21,7 +21,7 @@ json_array(jsonarray(Array)) -->
     "[", ws, json_array_members(Array), ws, "]", ws.
 
 % json_object/3
-json_object(jsonobject([])) --> "{", ws, "}", ws.
+json_object(jsonobject([])) --> "{", ws, "}", ws, !.
 json_object(jsonobject(Object)) -->
     "{", ws, json_members(Object), ws, "}", ws.
 
