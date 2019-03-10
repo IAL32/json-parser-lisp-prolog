@@ -26,22 +26,22 @@ AnyCharSansSQ   ::= <every character (ASCII) other than '’'>
 Some examples of the given simplified specification:
 
 * Empty object
-    ```
+    ```json
     {}
     ```
 * Empty array
-    ```
+    ```json
     []
     ```
 * An object with two items:
-    ```
+    ```json
     {
         "nome": "Arthur",
         "cognome": "Dent"
     }
     ```
 * A complex object, with a sub-object, which contains a number array (in general, arrays should not have to contain same type elements):
-    ```
+    ```json
     {
         "modello": "SuperBook 1234",
         "anno di produzione": 2014,
@@ -52,7 +52,7 @@ Some examples of the given simplified specification:
     }
     ```
 * An example from Wikipedia (a possible menu item):
-    ```
+    ```json
     {
         "type": "menu",
         "value": "File",
