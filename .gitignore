@@ -2,3 +2,5 @@
 *.swo
 .fuse_hidden*
 desktop.ini
+test/
+old/
